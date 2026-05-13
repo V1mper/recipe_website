@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Конструктор дня — ПП-рацион{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <h1 class="mb-3 text-center">Конструктор дня и контроль КБЖУ</h1>
+        <p class="lead text-center text-muted mb-4">
+            Соберите приёмы пищи из базы ПП-блюд или задайте целевые значения за день — сервер подберёт комбинацию из завтрака, перекуса, обеда и ужина.
+        </p>
+
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Автоподбор рациона на день</h2>
+                <form method="POST" class="row g-3 align-items-end">
+                    <input type="hidden" name="auto" value="1">
+                    <div class="col-6 col-md-3">
+                        <label class="form-label">Ккал</label>
+                        <input type="number" step="1" name="target_kcal" class="form-control" value="1800" min="1">
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label">Белки, г</label>
+                        <input type="number" step="0.1" name="target_protein" class="form-control" value="120" min="0.1">
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label">Жиры, г</label>
+                        <input type="number" step="0.1" name="target_fat" class="form-control" value="55" min="0.1">
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label">Углеводы, г</label>
+                        <input type="number" step="0.1" name="target_carbs" class="form-control" value="180" min="0.1">
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Подобрать день</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if suggestion %}
+        <div class="card mb-4 border-success shadow-sm">
+            <div class="card-header bg-success text-white">Вариант дня</div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush mb-3">
+                    {% for meal_name, r in suggestion %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start flex-wrap">
+                        <div>
+                            <strong>{{ meal_name }}</strong> —
+                            <a href="{{ url_for('recipe', recipe_name=r.name) }}">{{ r.name }}</a>
+                        </div>
+                        <span class="text-muted small">
+                            {{ r.kcal|int }} ккал · Б {{ '%.1f'|format(r.protein_g) }} · Ж {{ '%.1f'|format(r.fat_g) }} · У {{ '%.1f'|format(r.carbs_g) }}
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% set ns = namespace(k=0, p=0.0, f=0.0, c=0.0) %}
+                {% for _, r in suggestion %}
+                    {% set ns.k = ns.k + (r.kcal|int) %}
+                    {% set ns.p = ns.p + r.protein_g %}
+                    {% set ns.f = ns.f + r.fat_g %}
+                    {% set ns.c = ns.c + r.carbs_g %}
+                {% endfor %}
+                <p class="mb-0 fw-semibold">
+                    Итого за день: {{ ns.k }} ккал · Б {{ '%.1f'|format(ns.p) }} г · Ж {{ '%.1f'|format(ns.f) }} г · У {{ '%.1f'|format(ns.c) }} г
+                </p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Ручной выбор и сумма КБЖУ</h2>
+                <p class="text-muted small mb-3">В каждом блоке выберите одно блюдо — итог пересчитывается в браузере (гибридная логика: сервер + клиент).</p>
+                <div class="row g-3">
+                    {% for meal_name, items in grouped.items() %}
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{{ meal_name }}</label>
+                        <select class="form-select ration-select" data-meal="{{ meal_name }}">
+                            <option value="">— не выбрано —</option>
+                            {% for r in items %}
+                            <option
+                                value="{{ r.id }}"
+                                data-kcal="{{ r.kcal }}"
+                                data-p="{{ r.protein_g }}"
+                                data-f="{{ r.fat_g }}"
+                                data-c="{{ r.carbs_g }}"
+                                data-name="{{ r.name }}"
+                            >{{ r.name }} ({{ r.kcal }} ккал)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endfor %}
+                </div>
+                <hr class="my-4">
+                <div class="row text-center">
+                    <div class="col-6 col-md-3">
+                        <div class="text-muted small">Ккал</div>
+                        <div class="fs-4 fw-bold" id="sum-kcal">0</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-muted small">Белки, г</div>
+                        <div class="fs-4 fw-bold" id="sum-p">0</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-muted small">Жиры, г</div>
+                        <div class="fs-4 fw-bold" id="sum-f">0</div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-muted small">Углеводы, г</div>
+                        <div class="fs-4 fw-bold" id="sum-c">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">На главную</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Предложить рецепт — ПП-рацион{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <h1 class="mb-4">Предложить ПП-рецепт</h1>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="h5 card-title">Рекомендуемый формат</h2>
+                <ul class="mb-0 small">
+                    <li>Название блюда и приём пищи (завтрак / обед / ужин / перекус)</li>
+                    <li>КБЖУ на порцию: калории, белки, жиры, углеводы (граммы)</li>
+                    <li>Ингредиенты с количеством (г, мл, шт.)</li>
+                    <li>Пошаговое приготовление</li>
+                </ul>
+            </div>
+        </div>
+
+        <form method="POST">
+            <div class="mb-3">
+                <label for="user_name" class="form-label">Имя (необязательно)</label>
+                <input type="text" class="form-control" id="user_name" name="user_name" placeholder="Аноним">
+            </div>
+
+            <div class="mb-3">
+                <label for="recipe_text" class="form-label">Текст рецепта</label>
+                <textarea class="form-control" id="recipe_text" name="recipe_text" rows="10" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success">Отправить</button>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Назад</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

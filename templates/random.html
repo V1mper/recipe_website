@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Случайное блюдо — ПП-рацион{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <h1 class="mb-3">Случайное блюдо: {{ recipe.name }}</h1>
+
+        <div class="row row-cols-2 row-cols-md-4 g-2 mb-4">
+            <div class="col">
+                <div class="border rounded p-2 text-center bg-white shadow-sm">
+                    <div class="small text-muted">Ккал</div>
+                    <div class="fs-5 fw-semibold">{{ recipe.kcal }}</div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="border rounded p-2 text-center bg-white shadow-sm">
+                    <div class="small text-muted">Белки, г</div>
+                    <div class="fs-5 fw-semibold">{{ '%.1f'|format(recipe.protein_g) }}</div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="border rounded p-2 text-center bg-white shadow-sm">
+                    <div class="small text-muted">Жиры, г</div>
+                    <div class="fs-5 fw-semibold">{{ '%.1f'|format(recipe.fat_g) }}</div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="border rounded p-2 text-center bg-white shadow-sm">
+                    <div class="small text-muted">Углеводы, г</div>
+                    <div class="fs-5 fw-semibold">{{ '%.1f'|format(recipe.carbs_g) }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-pp-header text-white">
+                <h2 class="h5 mb-0">Ингредиенты</h2>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for ingredient in recipe.ingredients %}
+                    <li class="list-group-item">{{ ingredient.name }}: {{ ingredient.amount }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-pp-header text-white">
+                <h2 class="h5 mb-0">Приготовление</h2>
+            </div>
+            <div class="card-body">
+                <p class="mb-0" style="white-space: pre-line;">{{ recipe.instructions }}</p>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a href="{{ url_for('random_recipe') }}" class="btn btn-success">Другое блюдо</a>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">На главную</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

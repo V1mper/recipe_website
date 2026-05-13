@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="display-5 mb-3 text-center">Подбор ПП-рационов и контроль КБЖУ</h1>
+        <p class="lead mb-2 text-center text-muted">
+            Веб-интерфейс для выбора блюд правильного питания по приёмам пищи, расчёта суточных калорий и БЖУ и автоматического подбора дня под ваши цели.
+        </p>
+        <p class="text-center small text-muted mb-5">Тема работы: разработка гибридного веб-приложения и Telegram-бота для подбора ПП-рационов с контролем КБЖУ — в данном репозитории реализована только серверная веб-часть на Flask.</p>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100 shadow text-center">
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="h5 card-title">Конструктор дня</h2>
+                        <p class="card-text flex-grow-1 small">Ручной выбор блюд с суммой КБЖУ в браузере и автоподбор четырёх приёмов под целевые значения</p>
+                        <a href="{{ url_for('ration') }}" class="btn btn-success mt-auto">Открыть</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100 shadow text-center">
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="h5 card-title">Категории</h2>
+                        <p class="card-text flex-grow-1 small">Завтрак, обед, ужин и перекус — ПП-рецепты с указанием КБЖУ на порцию</p>
+                        <a href="{{ url_for('categories') }}" class="btn btn-success mt-auto">Каталог</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100 shadow text-center">
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="h5 card-title">Случайное блюдо</h2>
+                        <p class="card-text flex-grow-1 small">Идея для одного приёма пищи из базы ПП-блюд</p>
+                        <a href="{{ url_for('random_recipe') }}" class="btn btn-success mt-auto">Показать</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3 mb-4">
+                <div class="card h-100 shadow text-center">
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="h5 card-title">Предложить рецепт</h2>
+                        <p class="card-text flex-grow-1 small">Отправьте текст рецепта с КБЖУ (при наличии) на модерацию</p>
+                        <a href="{{ url_for('share_recipe') }}" class="btn btn-success mt-auto">Форма</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

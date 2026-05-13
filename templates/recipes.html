@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Рецепты {{ category_name }} - Кулинарный помощник{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">📋 Рецепты из категории "{{ category_name }}":</h1>
+
+{% if recipes %}
+<div class="row">
+    {% for recipe in recipes %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 shadow">
+            <div class="card-body">
+                <h3 class="card-title">{{ recipe.name }}</h3>
+                <a href="{{ url_for('recipe', recipe_name=recipe.name) }}" class="btn btn-success mt-2">
+                    Посмотреть рецепт
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    В этой категории пока нет рецептов.
+</div>
+{% endif %}
+
+<div class="mt-4">
+    <a href="{{ url_for('categories') }}" class="btn btn-outline-secondary">🔙 Назад к категориям</a>
+</div>
+{% endblock %}

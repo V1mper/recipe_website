@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category_name }} — ПП-рацион{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4 text-center">Блюда: {{ category_name }}</h1>
+
+        {% if recipes %}
+        <div class="row justify-content-center">
+            {% for recipe in recipes %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow">
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="h5 card-title">{{ recipe.name }}</h2>
+                        <p class="small text-muted mb-2">
+                            {{ recipe.kcal }} ккал · Б {{ '%.0f'|format(recipe.protein_g) }} · Ж {{ '%.0f'|format(recipe.fat_g) }} · У {{ '%.0f'|format(recipe.carbs_g) }} г
+                        </p>
+                        <a href="{{ url_for('recipe', recipe_name=recipe.name) }}" class="btn btn-success mt-auto">
+                            Открыть рецепт
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            В этой категории пока нет рецептов.
+        </div>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('categories') }}" class="btn btn-outline-secondary">Все категории</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

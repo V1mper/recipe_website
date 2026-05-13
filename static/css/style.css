@@ -1,0 +1,70 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.container-main {
+    flex: 1 0 auto;
+    padding-bottom: 20px;
+}
+
+.navbar.bg-pp-nav {
+    background: linear-gradient(90deg, #1b4332 0%, #2d6a4f 100%) !important;
+}
+
+.bg-pp-header {
+    background-color: #2d6a4f !important;
+}
+
+footer {
+    flex-shrink: 0;
+    width: 100%;
+    background-color: #f8f9fa !important;
+    border-top: 1px solid #dee2e6;
+    margin-top: auto;
+}
+
+.card {
+    transition: transform 0.2s;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-text {
+    color: #6c757d;
+}
+
+.btn {
+    border-radius: 20px;
+    padding: 8px 20px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.justify-content-center {
+    justify-content: center;
+}
+
+/* Убедимся, что навигационная панель не перекрывает контент */
+.navbar {
+    margin-bottom: 0;
+}
