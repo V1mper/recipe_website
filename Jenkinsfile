@@ -2,14 +2,12 @@ pipeline {
     agent any
 
     environment {
-        // Путь к твоему приложению
         APP_DIR = '.'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // Забираем код из репозитория
                 checkout scm
                 echo 'Код успешно получен из GitHub'
             }
@@ -17,7 +15,6 @@ pipeline {
 
         stage('Setup Environment') {
             steps {
-                // Устанавливаем виртуальное окружение и зависимости
                 dir(env.APP_DIR) {
                     bat '''
                         python -m venv venv
@@ -30,33 +27,33 @@ pipeline {
             }
         }
 
-      stage('Run Flask App') {
-    steps {
-        dir(env.APP_DIR) {
-            bat '''
-                call venv\\Scripts\\activate.bat
-                start /B python app.py > flask.log 2>&1
-                echo "Flask запущен, ждём 5 секунд..."
-                timeout /t 5 /nobreak > nul
-                for /f "tokens=*" %%i in ('netstat -ano ^| findstr :5000') do set line=%%i
-                if defined line (
-                    echo "✅ Flask-сервер успешно запущен на порту 5000"
-                ) else (
-                    echo "❌ Не удалось запустить Flask"
-                    exit 1
-                )
-                echo "Останавливаем Flask..."
-                for /f "tokens=5" %%a in ('netstat -ano ^| findstr :5000 ^| findstr LISTENING') do taskkill /F /PID %%a
-            '''
-            echo "Flask-приложение протестировано и остановлено"
+        stage('Run Flask App') {
+            steps {
+                dir(env.APP_DIR) {
+                    bat '''
+                        call venv\\Scripts\\activate.bat
+                        start /B python app.py > flask.log 2>&1
+                        echo "Flask запущен, ждём 5 секунд..."
+                        timeout /t 5 /nobreak > nul
+                        for /f "tokens=*" %%i in ('netstat -ano ^| findstr :5000') do set line=%%i
+                        if defined line (
+                            echo "✅ Flask-сервер успешно запущен на порту 5000"
+                        ) else (
+                            echo "❌ Не удалось запустить Flask"
+                            exit 1
+                        )
+                        echo "Останавливаем Flask..."
+                        for /f "tokens=5" %%a in ('netstat -ano ^| findstr :5000 ^| findstr LISTENING') do taskkill /F /PID %%a
+                    '''
+                    echo "Flask-приложение протестировано и остановлено"
+                }
+            }
         }
     }
-}
 
     post {
-        // Действия после завершения сборки
         always {
-            echo 'Pipeline завершен. Остановите Flask-приложение вручную, если это необходимо.'
+            echo 'Pipeline завершен.'
         }
         failure {
             echo 'Pipeline завершился с ошибкой. Проверьте консольный вывод.'
