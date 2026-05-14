@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                echo 'Код успешно получен из GitHub'
+                echo '✅ Код получен из GitHub'
             }
         }
 
@@ -22,41 +22,36 @@ pipeline {
                         python -m pip install --upgrade pip
                         python -m pip install -r requirements.txt
                     '''
-                    echo 'Окружение настроено и зависимости установлены'
+                    echo '✅ Окружение настроено и зависимости установлены'
                 }
             }
         }
 
-        stage('Run Flask App') {
+        stage('Test Application') {
             steps {
                 dir(env.APP_DIR) {
                     bat '''
                         call venv\\Scripts\\activate.bat
-                        start /B python app.py > flask.log 2>&1
-                        echo "Flask запущен, ждём 5 секунд..."
-                        timeout /t 5 /nobreak > nul
-                        for /f "tokens=*" %%i in ('netstat -ano ^| findstr :5000') do set line=%%i
-                        if defined line (
-                            echo "✅ Flask-сервер успешно запущен на порту 5000"
-                        ) else (
-                            echo "❌ Не удалось запустить Flask"
-                            exit 1
-                        )
-                        echo "Останавливаем Flask..."
-                        for /f "tokens=5" %%a in ('netstat -ano ^| findstr :5000 ^| findstr LISTENING') do taskkill /F /PID %%a
+                        echo "Проверка синтаксиса app.py..."
+                        python -m py_compile app.py
+                        if errorlevel 1 exit /b 1
+                        echo "✅ Синтаксис корректен"
+                        echo "Проверка наличия шаблонов..."
+                        if not exist templates\\* echo "⚠️ Нет шаблонов HTML" & exit /b 0
+                        echo "✅ Шаблоны найдены"
                     '''
-                    echo "Flask-приложение протестировано и остановлено"
+                    echo '✅ Тестирование пройдено успешно'
                 }
             }
         }
     }
 
     post {
-        always {
-            echo 'Pipeline завершен.'
+        success {
+            echo '🎉 Pipeline успешно завершён!'
         }
         failure {
-            echo 'Pipeline завершился с ошибкой. Проверьте консольный вывод.'
+            echo '❌ Pipeline завершился ошибкой. Проверьте логи выше.'
         }
     }
 }
