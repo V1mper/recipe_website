@@ -30,18 +30,28 @@ pipeline {
             }
         }
 
-        stage('Run Flask App') {
-            steps {
-                // Запускаем приложение в фоновом режиме
-                dir(env.APP_DIR) {
-                    bat '''
-                        start /B call venv\\Scripts\\activate.bat && python app.py
-                    '''
-                }
-                echo 'Flask-приложение запущено на http://localhost:5000'
-            }
+      stage('Run Flask App') {
+    steps {
+        dir(env.APP_DIR) {
+            bat '''
+                call venv\\Scripts\\activate.bat
+                start /B python app.py > flask.log 2>&1
+                echo "Flask запущен, ждём 5 секунд..."
+                timeout /t 5 /nobreak > nul
+                for /f "tokens=*" %%i in ('netstat -ano ^| findstr :5000') do set line=%%i
+                if defined line (
+                    echo "✅ Flask-сервер успешно запущен на порту 5000"
+                ) else (
+                    echo "❌ Не удалось запустить Flask"
+                    exit 1
+                )
+                echo "Останавливаем Flask..."
+                for /f "tokens=5" %%a in ('netstat -ano ^| findstr :5000 ^| findstr LISTENING') do taskkill /F /PID %%a
+            '''
+            echo "Flask-приложение протестировано и остановлено"
         }
     }
+}
 
     post {
         // Действия после завершения сборки
