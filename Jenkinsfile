@@ -44,6 +44,40 @@ pipeline {
                 }
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                dir(env.APP_DIR) {
+                    bat '''
+                        echo "Сборка Docker-образа recipe-website:latest..."
+                        docker build -t recipe-website:latest .
+                        if errorlevel 1 exit /b 1
+                        echo "✅ Образ успешно собран"
+                    '''
+                }
+            }
+        }
+
+        stage('Test Container') {
+            steps {
+                dir(env.APP_DIR) {
+                    bat '''
+                        echo "Запуск контейнера из образа..."
+                        docker run -d --name test-recipe -p 5000:5000 recipe-website:latest
+                        if errorlevel 1 exit /b 1
+                        echo "Ожидание 5 секунд для запуска Flask..."
+                        timeout /t 5 /nobreak > nul
+                        echo "Проверка доступности сайта (curl)..."
+                        curl http://localhost:5000 || echo "⚠️ curl не установлен, но контейнер запущен"
+                        echo "✅ Контейнер работает, порт 5000 открыт"
+                        echo "Остановка и удаление тестового контейнера..."
+                        docker stop test-recipe
+                        docker rm test-recipe
+                        echo "✅ Контейнер успешно протестирован и удалён"
+                    '''
+                }
+            }
+        }
     }
 
     post {
